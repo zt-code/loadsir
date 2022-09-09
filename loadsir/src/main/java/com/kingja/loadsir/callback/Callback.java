@@ -1,6 +1,7 @@
 package com.kingja.loadsir.callback;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.View;
 
 import java.io.ByteArrayInputStream;
@@ -53,6 +54,7 @@ public abstract class Callback implements Serializable {
         rootView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Log.i("why_ui", "--------rootView onClick  "+v.getId());
                 if (onReloadEvent(context, rootView)) {
                     return;
                 }
