@@ -22,6 +22,7 @@ public abstract class Callback implements Serializable {
     private Context context;
     private OnReloadListener onReloadListener;
     private boolean successViewVisible;
+    private Integer[]ids;
 
     public Callback() {
     }
@@ -51,18 +52,41 @@ public abstract class Callback implements Serializable {
         if (rootView == null) {
             rootView = View.inflate(context, onCreateView(), null);
         }
-        rootView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.i("why_ui", "--------rootView onClick  "+v.getId());
-                if (onReloadEvent(context, rootView)) {
-                    return;
+
+        ids = onClickIds();
+
+        if(ids == null) {
+            rootView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Log.i("why_ui", "--------rootView onClick  "+v.getId());
+                    if (onReloadEvent(context, rootView)) {
+                        return;
+                    }
+                    if (onReloadListener != null) {
+                        onReloadListener.onReload(v);
+                    }
                 }
-                if (onReloadListener != null) {
-                    onReloadListener.onReload(v);
-                }
+            });
+
+        }else {
+            for(Integer id : ids) {
+                rootView.findViewById(id).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Log.i("why_ui", "--------ids onClick  "+v.getId());
+                        if (onReloadEvent(context, rootView)) {
+                            return;
+                        }
+                        if (onReloadListener != null) {
+                            onReloadListener.onReload(v);
+                        }
+                    }
+                });
             }
-        });
+        }
+
+
         onViewCreate(context, rootView);
         return rootView;
     }
@@ -92,6 +116,8 @@ public abstract class Callback implements Serializable {
     protected boolean onReloadEvent(Context context, View view) {
         return false;
     }
+
+    protected Integer[] onClickIds() { return null;}
 
     public Callback copy() {
         ByteArrayOutputStream bao = new ByteArrayOutputStream();
